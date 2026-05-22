@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SaaS Subscription Hell Simulator</title>
+  <link rel="icon" href="./img/favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <p class="eyebrow">Founder Finance Tool</p>
+      <h1>SaaS Subscription Hell Simulator</h1>
+      <p class="subtitle">
+        Buy tools you absolutely need to avoid doing the actual work.
+      </p>
+    </section>
+
+    <section class="dashboard">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>SaaS Menu</h2>
+          <span>Absolute essentials</span>
+        </div>
+
+        <div class="scroll-window" id="menuList">
+          <!-- <div class="item-row">
+            <div class="logo">N</div>
+            <div class="item-info">
+              <h3>Notion Pro Max Ultra</h3>
+              <p>For organizing tasks you will ignore.</p>
+            </div>
+            <strong>$12</strong>
+            <button class="buy-btn">Buy</button>
+            <button class="delete-btn">Delete</button>
+          </div> -->
+
+          <!-- <div class="item-row">
+            <div class="logo">C</div>
+            <div class="item-info">
+              <h3>Cursor Panic Plan</h3>
+              <p>Because typing code manually is medieval.</p>
+            </div>
+            <strong>$20</strong>
+            <button class="buy-btn">Buy</button>
+            <button class="delete-btn">Delete</button>
+          </div>
+
+          <div class="item-row">
+            <div class="logo">A</div>
+            <div class="item-info">
+              <h3>AI SEO Wizard</h3>
+              <p>Generates 400 blog posts no one reads.</p>
+            </div>
+            <strong>$49</strong>
+            <button class="buy-btn">Buy</button>
+            <button class="delete-btn">Delete</button>
+          </div>
+
+          <div class="item-row">
+            <div class="logo">F</div>
+            <div class="item-info">
+              <h3>Figma Team Therapy</h3>
+              <p>Where buttons become political debates.</p>
+            </div>
+            <strong>$15</strong>
+            <button class="buy-btn">Buy</button>
+            <button class="delete-btn">Delete</button>
+          </div>
+
+          <div class="item-row">
+            <div class="logo">S</div>
+            <div class="item-info">
+              <h3>Slack Distraction Suite</h3>
+              <p>Turn every thought into a notification.</p>
+            </div>
+            <strong>$8</strong>
+            <button class="buy-btn">Buy</button>
+            <button class="delete-btn">Delete</button>
+          </div> -->
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Cart</h2>
+          <span>Your monthly regret</span>
+        </div>
+
+        <div class="scroll-window cart-window" id="cartList">
+          <p class="empty-cart">No tools yet. Suspiciously healthy.</p>
+        </div>
+
+        <div class="total-box">
+          <span>Total expenses / month</span>
+          <strong id="totalExpenses">$0</strong>
+        </div>
+
+        <button class="mrr-btn" id="showMrrBtn">Show MRR</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
