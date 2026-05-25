@@ -157,6 +157,11 @@ button {
   color: #d8d8e8;
 }
 
+.mute-btn {
+  cursor: unset;
+  opacity: .4;
+}
+
 .cart-window {
   background: #10121f;
   border: 1px dashed #373b58;
