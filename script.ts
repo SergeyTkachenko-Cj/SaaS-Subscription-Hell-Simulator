@@ -34,7 +34,7 @@
 // -----------------------------------------------------------------
 
 (() => {
-    
+
 type menuItem = {id: number, name: string, sub: string, image: string, price: number}
 
 const menu: menuItem[] = [
@@ -49,48 +49,92 @@ const menu: menuItem[] = [
     {id: 8, name: "Supabase Backend Delusion", sub: "Backend in 5 minutes. Debugging in 5 days.", image: "./img/seo_logo.png", price: 25},
     {id: 9, name: "Zoom Soul Drain Premium", sub: "This meeting could’ve been an email.", image: "./img/figma_logo.png", price: 17}
 ];
+
+(function renderMenu(): void {
+  const menuList = document.querySelector("#menuList");
+  if (!menuList) return;
+
+  menuList.innerHTML = menu.map(item => `
+    <div class="item-row" data-id="${item.id}">
+      <div class="logo">
+        <img src="${item.image}" alt="${item.name}" />
+      </div>
+      <div class="item-info">
+        <h3>${item.name}</h3>
+        <p>${item.sub}</p>
+      </div>
+      <strong>$${item.price.toFixed(2)}</strong>
+      <button class="buy-btn" data-action="add">Buy</button>
+      <button class="delete-btn mute-btn" data-action="delete" disabled>Delete</button>
+    </div>
+  `).join("");
+})();
+
 let cart: menuItem[] = [];
 let overall: number = 0;
 
-(function renderMenu(): void {
-    const menuList = document.querySelector("#menuList");
-    if (!menuList) return;
-  
-    menuList.innerHTML = menu.map(item => `
-      <div class="item-row" data-id="${item.id}">
-        <div class="logo">
-          <img src="${item.image}" alt="${item.name}" />
-        </div>
-        <div class="item-info">
-          <h3>${item.name}</h3>
-          <p>${item.sub}</p>
-        </div>
-        <strong>$${item.price.toFixed(2)}</strong>
-        <button class="buy-btn" data-action="add">Buy</button>
-        <button class="delete-btn mute-btn" data-action="delete" disabled>Delete</button>
-      </div>
-    `).join("");
-  })();
+const addBtn = document.querySelectorAll(".buy-btn");
+const delBtn = document.querySelectorAll(".delete-btn");
+const mrrBtn = document.querySelectorAll("#mrrBtn");
 
-function addCart(item: Element): void {
+function showSum(sum: number): void {
+  const exp = document.querySelector("#totalExpenses");
+  if (!exp) return
+  exp.textContent = sum.toString();
+}
+
+function btnsOnOff(btn: HTMLButtonElement): void {    // toggle buttun pairs mutability
+  if (!btn.disabled) {
+    btn.disabled = true;
+    btn.classList.add("mute-btn");
+  } 
+  else { 
+    btn.disabled = false;
+    btn.classList.remove("mute-btn");
+  }
+}
+
+function findAllBtns(item: HTMLElement): void {     // finds all button pairs 
+  const allBtns = item.querySelectorAll("button");
+  allBtns.forEach(btn => btnsOnOff(btn));
+}
+
+function showMrr(btn: Element | undefined): void {
+  if (!(btn instanceof HTMLButtonElement)) return;
+  if (overall > 0) {
+    btn.disabled = false;
+    btn.classList.remove("mute-btn");
+  }
+  else { 
+    btn.disabled = true;
+    btn.classList.add("mute-btn");
+  }
+}
+
+function getElId(item: HTMLButtonElement): menuItem | undefined {
   if (!item.parentElement) return
-    const elem: number = Number(item.parentElement.getAttribute("data-id"));
-    const gotcha = menu.find(e => e.id === elem);
-    if (!gotcha) return
-    cart.push(gotcha);
+  const elem: number = Number(item.parentElement.getAttribute("data-id"));
+  return menu.find(e => e.id === elem)
+}
+
+function addCart(item: HTMLButtonElement): void {
+  if (!item.parentElement) return
+  const gotcha = getElId(item);
+  if (!gotcha) return
+  cart.push(gotcha);
+  overall += gotcha.price;
+  findAllBtns(item.parentElement);
+  showSum(overall);
+  showMrr(mrrBtn[0]);
 };
 
-function delCart(item: Event): void {
-  console.log("bambi");
+function delCart(item: HTMLButtonElement): void {
+  const elem: number = Number(item.parentElement?.getAttribute("data-id"));
 };
 
 function showMRR(item: Event): void {
   console.log("MRR");
 };
-
-const addBtn = document.querySelectorAll(".buy-btn");
-const delBtn = document.querySelectorAll(".delete-btn");
-const mrrBtn = document.querySelectorAll("#mrrBtn");
 
 function btnEvnts(item: NodeListOf<Element>, func: Function): void {
   if (!item) return
@@ -98,7 +142,7 @@ function btnEvnts(item: NodeListOf<Element>, func: Function): void {
 };
 
 btnEvnts(addBtn, addCart);
-// btnEvnts(delBtn, delCart);
+btnEvnts(delBtn, delCart);
 // btnEvnts(mrrBtn, showMRR);
 })();
 

@@ -41,48 +41,89 @@
         { id: 8, name: "Supabase Backend Delusion", sub: "Backend in 5 minutes. Debugging in 5 days.", image: "./img/seo_logo.png", price: 25 },
         { id: 9, name: "Zoom Soul Drain Premium", sub: "This meeting could’ve been an email.", image: "./img/figma_logo.png", price: 17 }
     ];
-    let cart = [];
-    let overall = 0;
     (function renderMenu() {
         const menuList = document.querySelector("#menuList");
         if (!menuList)
             return;
         menuList.innerHTML = menu.map(item => `
-      <div class="item-row" data-id="${item.id}">
-        <div class="logo">
-          <img src="${item.image}" alt="${item.name}" />
-        </div>
-        <div class="item-info">
-          <h3>${item.name}</h3>
-          <p>${item.sub}</p>
-        </div>
-        <strong>$${item.price.toFixed(2)}</strong>
-        <button class="buy-btn" data-action="add">Buy</button>
-        <button class="delete-btn mute-btn" data-action="delete" disabled>Delete</button>
+    <div class="item-row" data-id="${item.id}">
+      <div class="logo">
+        <img src="${item.image}" alt="${item.name}" />
       </div>
-    `).join("");
+      <div class="item-info">
+        <h3>${item.name}</h3>
+        <p>${item.sub}</p>
+      </div>
+      <strong>$${item.price.toFixed(2)}</strong>
+      <button class="buy-btn" data-action="add">Buy</button>
+      <button class="delete-btn mute-btn" data-action="delete" disabled>Delete</button>
+    </div>
+  `).join("");
     })();
-    function addCart(item) {
+    let cart = [];
+    let overall = 0;
+    const addBtn = document.querySelectorAll(".buy-btn");
+    const delBtn = document.querySelectorAll(".delete-btn");
+    const mrrBtn = document.querySelectorAll("#mrrBtn");
+    function showSum(sum) {
+        const exp = document.querySelector("#totalExpenses");
+        if (!exp)
+            return;
+        exp.textContent = sum.toString();
+    }
+    function btnsOnOff(btn) {
+        if (!btn.disabled) {
+            btn.disabled = true;
+            btn.classList.add("mute-btn");
+        }
+        else {
+            btn.disabled = false;
+            btn.classList.remove("mute-btn");
+        }
+    }
+    function findAllBtns(item) {
+        const allBtns = item.querySelectorAll("button");
+        allBtns.forEach(btn => btnsOnOff(btn));
+    }
+    function showMrr(btn) {
+        if (!(btn instanceof HTMLButtonElement))
+            return;
+        if (overall > 0) {
+            btn.disabled = false;
+            btn.classList.remove("mute-btn");
+        }
+        else {
+            btn.disabled = true;
+            btn.classList.add("mute-btn");
+        }
+    }
+    function getElId(item) {
         if (!item.parentElement)
             return;
         const elem = Number(item.parentElement.getAttribute("data-id"));
-        const gotcha = menu.find(e => e.id === elem);
+        return menu.find(e => e.id === elem);
+    }
+    function addCart(item) {
+        if (!item.parentElement)
+            return;
+        const gotcha = getElId(item);
         if (!gotcha)
             return;
         cart.push(gotcha);
+        overall += gotcha.price;
+        findAllBtns(item.parentElement);
+        showSum(overall);
+        showMrr(mrrBtn[0]);
     }
     ;
     function delCart(item) {
-        console.log("bambi");
+        const elem = Number(item.parentElement?.getAttribute("data-id"));
     }
     ;
     function showMRR(item) {
         console.log("MRR");
     }
     ;
-    const addBtn = document.querySelectorAll(".buy-btn");
-    const delBtn = document.querySelectorAll(".delete-btn");
-    const mrrBtn = document.querySelectorAll("#mrrBtn");
     function btnEvnts(item, func) {
         if (!item)
             return;
@@ -90,7 +131,7 @@
     }
     ;
     btnEvnts(addBtn, addCart);
-    // btnEvnts(delBtn, delCart);
+    btnEvnts(delBtn, delCart);
     // btnEvnts(mrrBtn, showMRR);
 })();
 //# sourceMappingURL=script.js.map
