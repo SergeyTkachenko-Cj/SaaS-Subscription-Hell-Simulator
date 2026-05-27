@@ -69,7 +69,7 @@
         const exp = document.querySelector("#totalExpenses");
         if (!exp)
             return;
-        exp.textContent = sum.toString();
+        exp.textContent = sum.toFixed(2);
     }
     function btnsOnOff(btn) {
         if (!btn.disabled) {
@@ -110,18 +110,23 @@
         if (!gotcha)
             return;
         cart.push(gotcha);
-        overall += gotcha.price;
+        overall = Math.round((overall + gotcha.price) * 100) / 100;
         findAllBtns(item.parentElement);
         showSum(overall);
         showMrr(mrrBtn[0]);
     }
     ;
     function delCart(item) {
-        const elem = Number(item.parentElement?.getAttribute("data-id"));
-    }
-    ;
-    function showMRR(item) {
-        console.log("MRR");
+        if (!item.parentElement)
+            return;
+        const gotcha = getElId(item);
+        if (!gotcha)
+            return;
+        const cartNew = cart.splice(cart.findIndex(e => e === gotcha), 1);
+        overall = Math.round((overall - gotcha.price) * 100) / 100;
+        findAllBtns(item.parentElement);
+        showSum(overall);
+        showMrr(mrrBtn[0]);
     }
     ;
     function btnEvnts(item, func) {
