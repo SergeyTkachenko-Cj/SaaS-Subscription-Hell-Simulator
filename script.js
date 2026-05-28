@@ -129,6 +129,21 @@
         showMrr(mrrBtn[0]);
     }
     ;
+    function popUp() {
+        const getSection = document.querySelector(".show-popup");
+        if (!getSection)
+            return;
+        getSection.innerHTML = `
+  <div class="pop-up">
+      <div class="popup-panel">
+        <h2>Congratulations,</h2> 
+        <h2 class="second-header">your MRR is now negative 👏</h2>
+        <br>
+        <h1 class="overall">- $ ${overall}</h1>
+      </div>
+    </div>
+  `;
+    }
     function btnEvnts(item, func) {
         if (!item)
             return;
@@ -137,6 +152,6 @@
     ;
     btnEvnts(addBtn, addCart);
     btnEvnts(delBtn, delCart);
-    // btnEvnts(mrrBtn, showMRR);
+    btnEvnts(mrrBtn, popUp);
 })();
 //# sourceMappingURL=script.js.map
