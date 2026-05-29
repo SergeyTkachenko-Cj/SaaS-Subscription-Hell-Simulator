@@ -77,13 +77,15 @@ const addBtn = document.querySelectorAll(".buy-btn");
 const delBtn = document.querySelectorAll(".delete-btn");
 const mrrBtn = document.querySelectorAll("#mrrBtn");
 
+const btnPairsState: boolean[] = [];
+
 function showSum(sum: number): void {
   const exp = document.querySelector("#totalExpenses");
   if (!exp) return
   exp.textContent = sum.toFixed(2);
 }
 
-function btnsOnOff(btn: HTMLButtonElement): void {    // toggle buttun pairs mutability
+function btnPairsOnOff(btn: HTMLButtonElement): void {    // toggle buttun pairs mutability
   if (!btn.disabled) {
     btn.disabled = true;
     btn.classList.add("mute-btn");
@@ -94,9 +96,9 @@ function btnsOnOff(btn: HTMLButtonElement): void {    // toggle buttun pairs mut
   }
 }
 
-function findAllBtns(item: HTMLElement): void {     // finds all button pairs 
+function findAllBtnPairs(item: HTMLElement): void {     // finds all button pairs 
   const allBtns = item.querySelectorAll("button");
-  allBtns.forEach(btn => btnsOnOff(btn));
+  allBtns.forEach(btn => btnPairsOnOff(btn));
 }
 
 function showMrr(btn: Element | undefined): void {
@@ -123,7 +125,7 @@ function addCart(item: HTMLButtonElement): void {
   if (!gotcha) return
   cart.push(gotcha);
   overall = Math.round((overall + gotcha.price) * 100) / 100;
-  findAllBtns(item.parentElement);
+  findAllBtnPairs(item.parentElement);
   showSum(overall);
   showMrr(mrrBtn[0]);
 };
@@ -134,12 +136,58 @@ function delCart(item: HTMLButtonElement): void {
   if (!gotcha) return
   const cartNew = cart.splice(cart.findIndex(e => e === gotcha), 1);
   overall = Math.round((overall - gotcha.price) * 100) / 100;
-  findAllBtns(item.parentElement);
+  findAllBtnPairs(item.parentElement);
   showSum(overall);
   showMrr(mrrBtn[0]);
 };
 
-function popUp() {
+function saveCurMenuBtns(): void {
+  const menuList = document.querySelector("#menuList");
+  if (!menuList) return
+  const menuListBtns = menuList.querySelectorAll("button");
+  menuListBtns.forEach(el => {
+    btnPairsState.push(el.disabled);
+  });
+}
+
+function restoreCurMenuBtns(): void {
+  const menuList = document.querySelector("#menuList");
+  if (!menuList) return
+  const menuListBtns = menuList.querySelectorAll("button");
+  btnPairsState.forEach((el, item) => {
+    if (!menuListBtns[item]) return
+    if (!el) { menuListBtns[item].disabled = false }
+  });
+}
+
+function disAllBtns(): void {
+  saveCurMenuBtns();
+  const dashboard = document.querySelectorAll(".dashboard");
+  if (!dashboard[0]) return
+  const allBtns = dashboard[0].querySelectorAll("button");
+  allBtns.forEach(el => { if (!el.disabled) {el.disabled = true} });
+}
+
+function enablAllBtns(): void {
+  restoreCurMenuBtns();
+  if (!(mrrBtn[0] instanceof HTMLButtonElement)) return
+  mrrBtn[0].disabled = false;
+}
+
+const popUpScreen = document.querySelectorAll(".show-popup");
+
+function closePopUp(item: HTMLElement): void {
+  if (!popUpScreen[0]) return
+  if (item.className === "pop-up") { popUpScreen[0].innerHTML = "" }
+  enablAllBtns();
+}
+
+function evnts(item: NodeListOf<Element>, func: Function): void {
+  if (!item) return
+  item.forEach(el => el.addEventListener("click", (e) => func(e.target)))
+};
+
+function popUp(item: HTMLButtonElement): void {
   const getSection = document.querySelector(".show-popup");
   if (!getSection) return
   getSection.innerHTML = `
@@ -152,15 +200,12 @@ function popUp() {
       </div>
     </div>
   `;
+  disAllBtns();
+  evnts(popUpScreen, closePopUp);
 }
 
-function btnEvnts(item: NodeListOf<Element>, func: Function): void {
-  if (!item) return
-  item.forEach(el => el.addEventListener("click", (e) => func(e.target)))
-};
-
-btnEvnts(addBtn, addCart);
-btnEvnts(delBtn, delCart);
-btnEvnts(mrrBtn, popUp);
+evnts(addBtn, addCart);
+evnts(delBtn, delCart);
+evnts(mrrBtn, popUp);
 })();
 

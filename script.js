@@ -65,13 +65,14 @@
     const addBtn = document.querySelectorAll(".buy-btn");
     const delBtn = document.querySelectorAll(".delete-btn");
     const mrrBtn = document.querySelectorAll("#mrrBtn");
+    const btnPairsState = [];
     function showSum(sum) {
         const exp = document.querySelector("#totalExpenses");
         if (!exp)
             return;
         exp.textContent = sum.toFixed(2);
     }
-    function btnsOnOff(btn) {
+    function btnPairsOnOff(btn) {
         if (!btn.disabled) {
             btn.disabled = true;
             btn.classList.add("mute-btn");
@@ -81,9 +82,9 @@
             btn.classList.remove("mute-btn");
         }
     }
-    function findAllBtns(item) {
+    function findAllBtnPairs(item) {
         const allBtns = item.querySelectorAll("button");
-        allBtns.forEach(btn => btnsOnOff(btn));
+        allBtns.forEach(btn => btnPairsOnOff(btn));
     }
     function showMrr(btn) {
         if (!(btn instanceof HTMLButtonElement))
@@ -111,7 +112,7 @@
             return;
         cart.push(gotcha);
         overall = Math.round((overall + gotcha.price) * 100) / 100;
-        findAllBtns(item.parentElement);
+        findAllBtnPairs(item.parentElement);
         showSum(overall);
         showMrr(mrrBtn[0]);
     }
@@ -124,12 +125,65 @@
             return;
         const cartNew = cart.splice(cart.findIndex(e => e === gotcha), 1);
         overall = Math.round((overall - gotcha.price) * 100) / 100;
-        findAllBtns(item.parentElement);
+        findAllBtnPairs(item.parentElement);
         showSum(overall);
         showMrr(mrrBtn[0]);
     }
     ;
-    function popUp() {
+    function saveCurMenuBtns() {
+        const menuList = document.querySelector("#menuList");
+        if (!menuList)
+            return;
+        const menuListBtns = menuList.querySelectorAll("button");
+        menuListBtns.forEach(el => {
+            btnPairsState.push(el.disabled);
+        });
+    }
+    function restoreCurMenuBtns() {
+        const menuList = document.querySelector("#menuList");
+        if (!menuList)
+            return;
+        const menuListBtns = menuList.querySelectorAll("button");
+        btnPairsState.forEach((el, item) => {
+            if (!menuListBtns[item])
+                return;
+            if (!el) {
+                menuListBtns[item].disabled = false;
+            }
+        });
+    }
+    function disAllBtns() {
+        saveCurMenuBtns();
+        const dashboard = document.querySelectorAll(".dashboard");
+        if (!dashboard[0])
+            return;
+        const allBtns = dashboard[0].querySelectorAll("button");
+        allBtns.forEach(el => { if (!el.disabled) {
+            el.disabled = true;
+        } });
+    }
+    function enablAllBtns() {
+        restoreCurMenuBtns();
+        if (!(mrrBtn[0] instanceof HTMLButtonElement))
+            return;
+        mrrBtn[0].disabled = false;
+    }
+    const popUpScreen = document.querySelectorAll(".show-popup");
+    function closePopUp(item) {
+        if (!popUpScreen[0])
+            return;
+        if (item.className === "pop-up") {
+            popUpScreen[0].innerHTML = "";
+        }
+        enablAllBtns();
+    }
+    function evnts(item, func) {
+        if (!item)
+            return;
+        item.forEach(el => el.addEventListener("click", (e) => func(e.target)));
+    }
+    ;
+    function popUp(item) {
         const getSection = document.querySelector(".show-popup");
         if (!getSection)
             return;
@@ -143,15 +197,11 @@
       </div>
     </div>
   `;
+        disAllBtns();
+        evnts(popUpScreen, closePopUp);
     }
-    function btnEvnts(item, func) {
-        if (!item)
-            return;
-        item.forEach(el => el.addEventListener("click", (e) => func(e.target)));
-    }
-    ;
-    btnEvnts(addBtn, addCart);
-    btnEvnts(delBtn, delCart);
-    btnEvnts(mrrBtn, popUp);
+    evnts(addBtn, addCart);
+    evnts(delBtn, delCart);
+    evnts(mrrBtn, popUp);
 })();
 //# sourceMappingURL=script.js.map
