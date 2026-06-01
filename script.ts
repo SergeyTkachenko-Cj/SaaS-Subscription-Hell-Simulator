@@ -101,7 +101,7 @@ function findAllBtnPairs(item: HTMLElement): void {     // finds all button pair
   allBtns.forEach(btn => btnPairsOnOff(btn));
 }
 
-function showMrr(btn: Element | undefined): void {
+function showHideMrr(btn: Element | undefined): void {
   if (!(btn instanceof HTMLButtonElement)) return;
   if (overall > 0) {
     btn.disabled = false;
@@ -119,6 +119,14 @@ function getElId(item: HTMLButtonElement): menuItem | undefined {
   return menu.find(e => e.id === elem)
 }
 
+function showCart(item: menuItem): void {
+  const cartList = document.querySelector("#cartList > p");
+  if (!cartList) return
+  cartList.innerHTML = cart.map(i => `
+  <div>${i.name} - $${i.price}<button class="cart-cross" id="#${i.id}">X</button></div>  
+  `).join("<br/>");
+}
+
 function addCart(item: HTMLButtonElement): void {
   if (!item.parentElement) return
   const gotcha = getElId(item);
@@ -127,7 +135,8 @@ function addCart(item: HTMLButtonElement): void {
   overall = Math.round((overall + gotcha.price) * 100) / 100;
   findAllBtnPairs(item.parentElement);
   showSum(overall);
-  showMrr(mrrBtn[0]);
+  showHideMrr(mrrBtn[0]);
+  showCart(gotcha);
 };
 
 function delCart(item: HTMLButtonElement): void {
@@ -138,7 +147,7 @@ function delCart(item: HTMLButtonElement): void {
   overall = Math.round((overall - gotcha.price) * 100) / 100;
   findAllBtnPairs(item.parentElement);
   showSum(overall);
-  showMrr(mrrBtn[0]);
+  showHideMrr(mrrBtn[0]);
 };
 
 function saveCurMenuBtns(): void {

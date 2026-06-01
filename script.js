@@ -86,7 +86,7 @@
         const allBtns = item.querySelectorAll("button");
         allBtns.forEach(btn => btnPairsOnOff(btn));
     }
-    function showMrr(btn) {
+    function showHideMrr(btn) {
         if (!(btn instanceof HTMLButtonElement))
             return;
         if (overall > 0) {
@@ -104,6 +104,14 @@
         const elem = Number(item.parentElement.getAttribute("data-id"));
         return menu.find(e => e.id === elem);
     }
+    function showCart(item) {
+        const cartList = document.querySelector("#cartList > p");
+        if (!cartList)
+            return;
+        cartList.innerHTML = cart.map(i => `
+  <div>${i.name} - $${i.price}<button class="cart-cross" id="#${i.id}">X</button></div>  
+  `).join("<br/>");
+    }
     function addCart(item) {
         if (!item.parentElement)
             return;
@@ -114,7 +122,8 @@
         overall = Math.round((overall + gotcha.price) * 100) / 100;
         findAllBtnPairs(item.parentElement);
         showSum(overall);
-        showMrr(mrrBtn[0]);
+        showHideMrr(mrrBtn[0]);
+        showCart(gotcha);
     }
     ;
     function delCart(item) {
@@ -127,7 +136,7 @@
         overall = Math.round((overall - gotcha.price) * 100) / 100;
         findAllBtnPairs(item.parentElement);
         showSum(overall);
-        showMrr(mrrBtn[0]);
+        showHideMrr(mrrBtn[0]);
     }
     ;
     function saveCurMenuBtns() {
