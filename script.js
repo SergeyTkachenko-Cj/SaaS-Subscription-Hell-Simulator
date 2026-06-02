@@ -104,13 +104,29 @@
         const elem = Number(item.parentElement.getAttribute("data-id"));
         return menu.find(e => e.id === elem);
     }
-    function showCart(item) {
+    function showCart() {
         const cartList = document.querySelector("#cartList > p");
         if (!cartList)
             return;
         cartList.innerHTML = cart.map(i => `
-  <div>${i.name} - $${i.price}<button class="cart-cross" id="#${i.id}">X</button></div>  
+  <div data-id="${i.id}">${i.name} - $${i.price}<button class="cart-cross" id="item-${i.id}">X</button></div>  
   `).join("<br/>");
+        evnts(cartList.querySelectorAll(".cart-cross"), xBtnCart);
+    }
+    function xBtnCart(item) {
+        if (!item.parentElement)
+            return;
+        const menuList = document.querySelector("#menuList");
+        if (!menuList)
+            return;
+        const getDelCartBtn = menuList.querySelector(`[data-id="${item.parentElement.getAttribute('data-id')}"]`);
+        if (!getDelCartBtn)
+            return;
+        const delBtn = getDelCartBtn.querySelector(".delete-btn");
+        if (!(delBtn instanceof HTMLButtonElement))
+            return;
+        delCart(delBtn);
+        item.parentElement.remove();
     }
     function addCart(item) {
         if (!item.parentElement)
@@ -123,7 +139,7 @@
         findAllBtnPairs(item.parentElement);
         showSum(overall);
         showHideMrr(mrrBtn[0]);
-        showCart(gotcha);
+        showCart();
     }
     ;
     function delCart(item) {
@@ -132,11 +148,12 @@
         const gotcha = getElId(item);
         if (!gotcha)
             return;
-        const cartNew = cart.splice(cart.findIndex(e => e === gotcha), 1);
+        cart.splice(cart.findIndex(e => e === gotcha), 1);
         overall = Math.round((overall - gotcha.price) * 100) / 100;
         findAllBtnPairs(item.parentElement);
         showSum(overall);
         showHideMrr(mrrBtn[0]);
+        showCart();
     }
     ;
     function saveCurMenuBtns() {
