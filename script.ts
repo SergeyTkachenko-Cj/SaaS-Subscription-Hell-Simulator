@@ -53,7 +53,6 @@ const menu: menuItem[] = [
 (function renderMenu(): void {
   const menuList = document.querySelector("#menuList");
   if (!menuList) return;
-
   menuList.innerHTML = menu.map(item => `
     <div class="item-row" data-id="${item.id}">
       <div class="logo">
@@ -76,8 +75,9 @@ let overall: number = 0;
 const addBtn = document.querySelectorAll(".buy-btn");
 const delBtn = document.querySelectorAll(".delete-btn");
 const mrrBtn = document.querySelectorAll("#mrrBtn");
+const popUpScreen = document.querySelectorAll(".show-popup");
 
-const btnPairsState: boolean[] = [];
+let btnPairsState: boolean[] = [];
 
 function showSum(sum: number): void {
   const exp = document.querySelector("#totalExpenses");
@@ -114,8 +114,7 @@ function showHideMrr(btn: Element | undefined): void {
 }
 
 function getElId(item: HTMLButtonElement): menuItem | undefined {
-  if (!item.parentElement) return
-  const elem: number = Number(item.parentElement.getAttribute("data-id"));
+  const elem: number = Number(item.parentElement?.getAttribute("data-id"));
   return menu.find(e => e.id === elem)
 }
 
@@ -131,10 +130,8 @@ function showCart(): void {
 function xBtnCart(item: HTMLButtonElement): void {
   if (!item.parentElement) return
   const menuList = document.querySelector("#menuList");
-  if (!menuList) return
-  const getDelCartBtn = menuList.querySelector(`[data-id="${item.parentElement.getAttribute('data-id')}"]`);
-  if (!getDelCartBtn) return
-  const delBtn = getDelCartBtn.querySelector(".delete-btn");
+  const getDelCartBtn = menuList?.querySelector(`[data-id="${item.parentElement.getAttribute('data-id')}"]`);
+  const delBtn = getDelCartBtn?.querySelector(".delete-btn");
   if (!(delBtn instanceof HTMLButtonElement)) return
   delCart(delBtn);
   item.parentElement.remove();
@@ -165,6 +162,7 @@ function delCart(item: HTMLButtonElement): void {
 };
 
 function saveCurMenuBtns(): void {
+  btnPairsState = [];
   const menuList = document.querySelector("#menuList");
   if (!menuList) return
   const menuListBtns = menuList.querySelectorAll("button");
@@ -176,7 +174,7 @@ function saveCurMenuBtns(): void {
 function restoreCurMenuBtns(): void {
   const menuList = document.querySelector("#menuList");
   if (!menuList) return
-  const menuListBtns = menuList.querySelectorAll("button");
+  const menuListBtns = menuList?.querySelectorAll("button");
   btnPairsState.forEach((el, item) => {
     if (!menuListBtns[item]) return
     if (!el) { menuListBtns[item].disabled = false }
@@ -186,31 +184,30 @@ function restoreCurMenuBtns(): void {
 function disAllBtns(): void {
   saveCurMenuBtns();
   const dashboard = document.querySelectorAll(".dashboard");
-  if (!dashboard[0]) return
-  const allBtns = dashboard[0].querySelectorAll("button");
-  allBtns.forEach(el => { if (!el.disabled) {el.disabled = true} });
+  const allBtns = dashboard[0]?.querySelectorAll("button");
+  allBtns?.forEach(el => { if (!el.disabled) {el.disabled = true} });
 }
 
 function enablAllBtns(): void {
   restoreCurMenuBtns();
   if (!(mrrBtn[0] instanceof HTMLButtonElement)) return
   mrrBtn[0].disabled = false;
+  const getCartList = document.querySelector("#cartList");
+  const allBtns = getCartList?.querySelectorAll("button");
+  allBtns?.forEach(el => { if (el.disabled) {el.disabled = false} });
 }
-
-const popUpScreen = document.querySelectorAll(".show-popup");
 
 function closePopUp(item: HTMLElement): void {
   if (!popUpScreen[0]) return
   if (item.className === "pop-up") { popUpScreen[0].innerHTML = "" }
-  enablAllBtns();
+  if (popUpScreen[0].innerHTML === "") enablAllBtns()
 }
 
 function evnts(item: NodeListOf<Element>, func: Function): void {
-  if (!item) return
-  item.forEach(el => el.addEventListener("click", (e) => func(e.target)))
+  item?.forEach(el => el.addEventListener("click", (e) => func(e.target)))
 };
 
-function popUp(item: HTMLButtonElement): void {
+function popUp(): void {
   const getSection = document.querySelector(".show-popup");
   if (!getSection) return
   getSection.innerHTML = `
@@ -224,6 +221,10 @@ function popUp(item: HTMLButtonElement): void {
     </div>
   `;
   disAllBtns();
+  // popUpScreen[0]?.removeEventListener("click", e => closePopUp)
+  // const newScreen = popUpScreen[0]?.cloneNode(true);
+  // if (!newScreen) return
+  // popUpScreen[0]?.replaceWith(newScreen);
   evnts(popUpScreen, closePopUp);
 }
 
