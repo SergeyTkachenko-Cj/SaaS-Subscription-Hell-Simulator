@@ -107,9 +107,10 @@
         const cartList = document.querySelector("#cartList > p");
         if (!cartList)
             return;
-        cartList.innerHTML = cart.map(i => `
-  <div data-id="${i.id}">${i.name} - $${i.price}<button class="cart-cross" id="item-${i.id}">X</button></div>  
-  `).join("<br/>");
+        const cartMap = cart.map(i => `
+    <div data-id="${i.id}">${i.name} - $${i.price}<button class="cart-cross" id="item-${i.id}">X</button></div>  
+    `).join("<br/>");
+        cartMap ? cartList.innerHTML = cartMap : cartList.innerHTML = "No tools yet. Suspiciously healthy.";
         evnts(cartList.querySelectorAll(".cart-cross"), xBtnCart);
     }
     function xBtnCart(item) {
@@ -186,7 +187,7 @@
         restoreCurMenuBtns();
         if (!(mrrBtn[0] instanceof HTMLButtonElement))
             return;
-        mrrBtn[0].disabled = false;
+        showHideMrr(mrrBtn[0]);
         const getCartList = document.querySelector("#cartList");
         const allBtns = getCartList?.querySelectorAll("button");
         allBtns?.forEach(el => { if (el.disabled) {
@@ -194,12 +195,14 @@
         } });
     }
     function closePopUp(item) {
-        if (!popUpScreen[0])
+        const getEl = document.querySelectorAll(".show-popup");
+        if (!getEl[0])
             return;
         if (item.className === "pop-up") {
-            popUpScreen[0].innerHTML = "";
+            getEl[0].innerHTML = "";
         }
-        if (popUpScreen[0].innerHTML === "")
+        ;
+        if (getEl[0].innerHTML === "")
             enablAllBtns();
     }
     function evnts(item, func) {
@@ -221,14 +224,10 @@
     </div>
   `;
         disAllBtns();
-        // popUpScreen[0]?.removeEventListener("click", e => closePopUp)
-        // const newScreen = popUpScreen[0]?.cloneNode(true);
-        // if (!newScreen) return
-        // popUpScreen[0]?.replaceWith(newScreen);
-        evnts(popUpScreen, closePopUp);
     }
     evnts(addBtn, addCart);
     evnts(delBtn, delCart);
     evnts(mrrBtn, popUp);
+    evnts(popUpScreen, closePopUp);
 })();
 //# sourceMappingURL=script.js.map
