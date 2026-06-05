@@ -50,8 +50,15 @@ const menu: menuItem[] = [
     {id: 9, name: "Zoom Soul Drain Premium", sub: "This meeting could’ve been an email.", image: "./img/figma_logo.png", price: 17}
 ];
 
+let cart: menuItem[] = [];
+let overall: number = 0;
+let btnPairsState: boolean[] = [];
+
+const menuList = document.querySelector("#menuList");
+const mrrBtn = document.querySelectorAll("#mrrBtn");
+const popUpScreen = document.querySelectorAll(".show-popup");
+
 (function renderMenu(): void {
-  const menuList = document.querySelector("#menuList");
   if (!menuList) return;
   menuList.innerHTML = menu.map(item => `
     <div class="item-row" data-id="${item.id}">
@@ -69,20 +76,53 @@ const menu: menuItem[] = [
   `).join("");
 })();
 
-let cart: menuItem[] = [];
-let overall: number = 0;
-
 const addBtn = document.querySelectorAll(".buy-btn");
 const delBtn = document.querySelectorAll(".delete-btn");
-const mrrBtn = document.querySelectorAll("#mrrBtn");
-const popUpScreen = document.querySelectorAll(".show-popup");
 
-let btnPairsState: boolean[] = [];
+function addCart(item: HTMLButtonElement): void {
+  const gotcha = getElId(item);
+  if (!gotcha || !duplicatesCheck(gotcha, item)) return
+  cart.push(gotcha);
+  overall = Math.round((overall + gotcha.price) * 100) / 100;
+  if (!item.parentElement) return
+  addDelCartUpdates(item.parentElement);
+}
 
-function showSum(sum: number): void {
-  const exp = document.querySelector("#totalExpenses");
-  if (!exp) return
-  exp.textContent = sum.toFixed(2);
+function delCart(item: HTMLButtonElement): void {
+  const gotcha = getElId(item);
+  if (!gotcha || !duplicatesCheck(gotcha, item)) return
+  cart.splice(cart.findIndex(e => e === gotcha), 1);
+  overall = Math.round((overall - gotcha.price) * 100) / 100;
+  if (!item.parentElement) return
+  addDelCartUpdates(item.parentElement);
+}
+
+function duplicatesCheck(el: menuItem, btn: HTMLButtonElement): boolean {
+  let count: number = 0;
+  const addOrDel = btn.getAttribute("data-action");
+  if (!addOrDel) return false
+  let condition: number = addOrDel === "add" ? 0 : 1;
+  for (let i = 0; i < cart.length; i++) {
+    if (el.id === cart[i]?.id) { count++ }
+  }
+  return !(count > condition)
+}
+
+function addDelCartUpdates(item: HTMLElement): void {
+  findAllBtnPairs(item);
+  showSum(overall);
+  showHideMrr(mrrBtn[0]);
+  showCart();
+}
+
+function getElId(item: HTMLButtonElement): menuItem | undefined {
+  const elem: number = Number(item.parentElement?.getAttribute("data-id"));
+  return menu.find(e => e.id === elem)
+}
+
+function findAllBtnPairs(item: HTMLElement): void {     
+  const allBtns = item.querySelectorAll("button");
+  allBtns.forEach(btn => btnPairsOnOff(btn));
 }
 
 function btnPairsOnOff(btn: HTMLButtonElement): void {    // toggle buttun pairs mutability
@@ -96,9 +136,29 @@ function btnPairsOnOff(btn: HTMLButtonElement): void {    // toggle buttun pairs
   }
 }
 
-function findAllBtnPairs(item: HTMLElement): void {     // finds all button pairs 
-  const allBtns = item.querySelectorAll("button");
-  allBtns.forEach(btn => btnPairsOnOff(btn));
+function showSum(sum: number): void {
+  const expenses = document.querySelector("#totalExpenses");
+  if (!expenses) return
+  expenses.textContent = sum.toFixed(2);
+}
+
+function showCart(): void {
+  const cartList = document.querySelector(".empty-cart");
+  if (!cartList) return
+  const cartMap: string = cart.map(i => `
+    <div data-id="${i.id}">${i.name} - $${i.price}<button class="cart-cross" id="item-${i.id}">X</button></div>  
+    `).join("<br/>");
+  cartMap ? cartList.innerHTML = cartMap : cartList.innerHTML = "No tools yet. Suspiciously healthy.";
+  evnts(cartList.querySelectorAll(".cart-cross"), xBtnCart);
+}
+
+function xBtnCart(item: HTMLButtonElement): void {
+  if (!item.parentElement) return
+  const getDelCartBtn = menuList?.querySelector(`[data-id="${item.parentElement.getAttribute('data-id')}"]`);
+  const delBtn = getDelCartBtn?.querySelector(".delete-btn");
+  if (!(delBtn instanceof HTMLButtonElement)) return
+  delCart(delBtn);
+  item.parentElement.remove();
 }
 
 function showHideMrr(btn: Element | undefined): void {
@@ -113,80 +173,19 @@ function showHideMrr(btn: Element | undefined): void {
   }
 }
 
-function getElId(item: HTMLButtonElement): menuItem | undefined {
-  const elem: number = Number(item.parentElement?.getAttribute("data-id"));
-  return menu.find(e => e.id === elem)
-}
-
-function showCart(): void {
-  const cartList = document.querySelector("#cartList > p");
-  if (!cartList) return
-  const cartMap: string = cart.map(i => `
-    <div data-id="${i.id}">${i.name} - $${i.price}<button class="cart-cross" id="item-${i.id}">X</button></div>  
-    `).join("<br/>");
-  cartMap ? cartList.innerHTML = cartMap : cartList.innerHTML = "No tools yet. Suspiciously healthy.";
-  evnts(cartList.querySelectorAll(".cart-cross"), xBtnCart);
-}
-
-function xBtnCart(item: HTMLButtonElement): void {
-  if (!item.parentElement) return
-  const menuList = document.querySelector("#menuList");
-  const getDelCartBtn = menuList?.querySelector(`[data-id="${item.parentElement.getAttribute('data-id')}"]`);
-  const delBtn = getDelCartBtn?.querySelector(".delete-btn");
-  if (!(delBtn instanceof HTMLButtonElement)) return
-  delCart(delBtn);
-  item.parentElement.remove();
-}
-
-function addCart(item: HTMLButtonElement): void {
-  if (!item.parentElement) return
-  const gotcha = getElId(item);
-  if (!gotcha) return
-  cart.push(gotcha);
-  overall = Math.round((overall + gotcha.price) * 100) / 100;
-  findAllBtnPairs(item.parentElement);
-  showSum(overall);
-  showHideMrr(mrrBtn[0]);
-  showCart();
-};
-
-function delCart(item: HTMLButtonElement): void {
-  if (!item.parentElement) return
-  const gotcha = getElId(item);
-  if (!gotcha) return
-  cart.splice(cart.findIndex(e => e === gotcha), 1);
-  overall = Math.round((overall - gotcha.price) * 100) / 100;
-  findAllBtnPairs(item.parentElement);
-  showSum(overall);
-  showHideMrr(mrrBtn[0]);
-  showCart();
-};
-
 function saveCurMenuBtns(): void {
   btnPairsState = [];
-  const menuList = document.querySelector("#menuList");
-  if (!menuList) return
-  const menuListBtns = menuList.querySelectorAll("button");
-  menuListBtns.forEach(el => {
-    btnPairsState.push(el.disabled);
-  });
+  const menuListBtns = menuList?.querySelectorAll("button");
+  menuListBtns?.forEach(el => { btnPairsState.push(el.disabled) });
 }
 
 function restoreCurMenuBtns(): void {
-  const menuList = document.querySelector("#menuList");
   if (!menuList) return
   const menuListBtns = menuList?.querySelectorAll("button");
   btnPairsState.forEach((el, item) => {
     if (!menuListBtns[item]) return
     if (!el) { menuListBtns[item].disabled = false }
   });
-}
-
-function disAllBtns(): void {
-  saveCurMenuBtns();
-  const dashboard = document.querySelectorAll(".dashboard");
-  const allBtns = dashboard[0]?.querySelectorAll("button");
-  allBtns?.forEach(el => { if (!el.disabled) {el.disabled = true} });
 }
 
 function enablAllBtns(): void {
@@ -198,21 +197,28 @@ function enablAllBtns(): void {
   allBtns?.forEach(el => { if (el.disabled) {el.disabled = false} });
 }
 
+function disAllBtns(): void {
+  saveCurMenuBtns();
+  const dashboard = document.querySelectorAll(".dashboard");
+  const allBtns = dashboard[0]?.querySelectorAll("button");
+  allBtns?.forEach(el => { if (!el.disabled) {el.disabled = true} });
+}
+
 function closePopUp(item: HTMLElement): void {
-  const getEl = document.querySelectorAll(".show-popup");
-  if (!getEl[0]) return
-  if (item.className === "pop-up") { getEl[0].innerHTML = "" };
-  if (getEl[0].innerHTML === "") enablAllBtns()
+  if (!popUpScreen[0] || !item.children[0]) return
+  if (item.children[0].classList.contains("pop-up")) { 
+    popUpScreen[0].innerHTML = "";
+    enablAllBtns(); 
+  };
 }
 
 function evnts(item: NodeListOf<Element>, func: Function): void {
-  item?.forEach(el => el.addEventListener("click", (e) => func(e.target)))
-};
+  item?.forEach(el => el.addEventListener("click", (e) => func(e.currentTarget)))
+}
 
 function popUp(): void {
-  const getSection = document.querySelector(".show-popup");
-  if (!getSection) return
-  getSection.innerHTML = `
+  if (!popUpScreen[0]) return
+  popUpScreen[0].innerHTML = `
   <div class="pop-up">
       <div class="popup-panel">
         <h2>Congratulations,</h2> 

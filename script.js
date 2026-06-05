@@ -41,8 +41,13 @@
         { id: 8, name: "Supabase Backend Delusion", sub: "Backend in 5 minutes. Debugging in 5 days.", image: "./img/seo_logo.png", price: 25 },
         { id: 9, name: "Zoom Soul Drain Premium", sub: "This meeting could’ve been an email.", image: "./img/figma_logo.png", price: 17 }
     ];
+    let cart = [];
+    let overall = 0;
+    let btnPairsState = [];
+    const menuList = document.querySelector("#menuList");
+    const mrrBtn = document.querySelectorAll("#mrrBtn");
+    const popUpScreen = document.querySelectorAll(".show-popup");
     (function renderMenu() {
-        const menuList = document.querySelector("#menuList");
         if (!menuList)
             return;
         menuList.innerHTML = menu.map(item => `
@@ -60,18 +65,54 @@
     </div>
   `).join("");
     })();
-    let cart = [];
-    let overall = 0;
     const addBtn = document.querySelectorAll(".buy-btn");
     const delBtn = document.querySelectorAll(".delete-btn");
-    const mrrBtn = document.querySelectorAll("#mrrBtn");
-    const popUpScreen = document.querySelectorAll(".show-popup");
-    let btnPairsState = [];
-    function showSum(sum) {
-        const exp = document.querySelector("#totalExpenses");
-        if (!exp)
+    function addCart(item) {
+        const gotcha = getElId(item);
+        if (!gotcha || !duplicatesCheck(gotcha, item))
             return;
-        exp.textContent = sum.toFixed(2);
+        cart.push(gotcha);
+        overall = Math.round((overall + gotcha.price) * 100) / 100;
+        if (!item.parentElement)
+            return;
+        addDelCartUpdates(item.parentElement);
+    }
+    function delCart(item) {
+        const gotcha = getElId(item);
+        if (!gotcha || !duplicatesCheck(gotcha, item))
+            return;
+        cart.splice(cart.findIndex(e => e === gotcha), 1);
+        overall = Math.round((overall - gotcha.price) * 100) / 100;
+        if (!item.parentElement)
+            return;
+        addDelCartUpdates(item.parentElement);
+    }
+    function duplicatesCheck(el, btn) {
+        let count = 0;
+        const addOrDel = btn.getAttribute("data-action");
+        if (!addOrDel)
+            return false;
+        let condition = addOrDel === "add" ? 0 : 1;
+        for (let i = 0; i < cart.length; i++) {
+            if (el.id === cart[i]?.id) {
+                count++;
+            }
+        }
+        return !(count > condition);
+    }
+    function addDelCartUpdates(item) {
+        findAllBtnPairs(item);
+        showSum(overall);
+        showHideMrr(mrrBtn[0]);
+        showCart();
+    }
+    function getElId(item) {
+        const elem = Number(item.parentElement?.getAttribute("data-id"));
+        return menu.find(e => e.id === elem);
+    }
+    function findAllBtnPairs(item) {
+        const allBtns = item.querySelectorAll("button");
+        allBtns.forEach(btn => btnPairsOnOff(btn));
     }
     function btnPairsOnOff(btn) {
         if (!btn.disabled) {
@@ -83,9 +124,31 @@
             btn.classList.remove("mute-btn");
         }
     }
-    function findAllBtnPairs(item) {
-        const allBtns = item.querySelectorAll("button");
-        allBtns.forEach(btn => btnPairsOnOff(btn));
+    function showSum(sum) {
+        const expenses = document.querySelector("#totalExpenses");
+        if (!expenses)
+            return;
+        expenses.textContent = sum.toFixed(2);
+    }
+    function showCart() {
+        const cartList = document.querySelector(".empty-cart");
+        if (!cartList)
+            return;
+        const cartMap = cart.map(i => `
+    <div data-id="${i.id}">${i.name} - $${i.price}<button class="cart-cross" id="item-${i.id}">X</button></div>  
+    `).join("<br/>");
+        cartMap ? cartList.innerHTML = cartMap : cartList.innerHTML = "No tools yet. Suspiciously healthy.";
+        evnts(cartList.querySelectorAll(".cart-cross"), xBtnCart);
+    }
+    function xBtnCart(item) {
+        if (!item.parentElement)
+            return;
+        const getDelCartBtn = menuList?.querySelector(`[data-id="${item.parentElement.getAttribute('data-id')}"]`);
+        const delBtn = getDelCartBtn?.querySelector(".delete-btn");
+        if (!(delBtn instanceof HTMLButtonElement))
+            return;
+        delCart(delBtn);
+        item.parentElement.remove();
     }
     function showHideMrr(btn) {
         if (!(btn instanceof HTMLButtonElement))
@@ -99,71 +162,12 @@
             btn.classList.add("mute-btn");
         }
     }
-    function getElId(item) {
-        const elem = Number(item.parentElement?.getAttribute("data-id"));
-        return menu.find(e => e.id === elem);
-    }
-    function showCart() {
-        const cartList = document.querySelector("#cartList > p");
-        if (!cartList)
-            return;
-        const cartMap = cart.map(i => `
-    <div data-id="${i.id}">${i.name} - $${i.price}<button class="cart-cross" id="item-${i.id}">X</button></div>  
-    `).join("<br/>");
-        cartMap ? cartList.innerHTML = cartMap : cartList.innerHTML = "No tools yet. Suspiciously healthy.";
-        evnts(cartList.querySelectorAll(".cart-cross"), xBtnCart);
-    }
-    function xBtnCart(item) {
-        if (!item.parentElement)
-            return;
-        const menuList = document.querySelector("#menuList");
-        const getDelCartBtn = menuList?.querySelector(`[data-id="${item.parentElement.getAttribute('data-id')}"]`);
-        const delBtn = getDelCartBtn?.querySelector(".delete-btn");
-        if (!(delBtn instanceof HTMLButtonElement))
-            return;
-        delCart(delBtn);
-        item.parentElement.remove();
-    }
-    function addCart(item) {
-        if (!item.parentElement)
-            return;
-        const gotcha = getElId(item);
-        if (!gotcha)
-            return;
-        cart.push(gotcha);
-        overall = Math.round((overall + gotcha.price) * 100) / 100;
-        findAllBtnPairs(item.parentElement);
-        showSum(overall);
-        showHideMrr(mrrBtn[0]);
-        showCart();
-    }
-    ;
-    function delCart(item) {
-        if (!item.parentElement)
-            return;
-        const gotcha = getElId(item);
-        if (!gotcha)
-            return;
-        cart.splice(cart.findIndex(e => e === gotcha), 1);
-        overall = Math.round((overall - gotcha.price) * 100) / 100;
-        findAllBtnPairs(item.parentElement);
-        showSum(overall);
-        showHideMrr(mrrBtn[0]);
-        showCart();
-    }
-    ;
     function saveCurMenuBtns() {
         btnPairsState = [];
-        const menuList = document.querySelector("#menuList");
-        if (!menuList)
-            return;
-        const menuListBtns = menuList.querySelectorAll("button");
-        menuListBtns.forEach(el => {
-            btnPairsState.push(el.disabled);
-        });
+        const menuListBtns = menuList?.querySelectorAll("button");
+        menuListBtns?.forEach(el => { btnPairsState.push(el.disabled); });
     }
     function restoreCurMenuBtns() {
-        const menuList = document.querySelector("#menuList");
         if (!menuList)
             return;
         const menuListBtns = menuList?.querySelectorAll("button");
@@ -174,14 +178,6 @@
                 menuListBtns[item].disabled = false;
             }
         });
-    }
-    function disAllBtns() {
-        saveCurMenuBtns();
-        const dashboard = document.querySelectorAll(".dashboard");
-        const allBtns = dashboard[0]?.querySelectorAll("button");
-        allBtns?.forEach(el => { if (!el.disabled) {
-            el.disabled = true;
-        } });
     }
     function enablAllBtns() {
         restoreCurMenuBtns();
@@ -194,26 +190,30 @@
             el.disabled = false;
         } });
     }
+    function disAllBtns() {
+        saveCurMenuBtns();
+        const dashboard = document.querySelectorAll(".dashboard");
+        const allBtns = dashboard[0]?.querySelectorAll("button");
+        allBtns?.forEach(el => { if (!el.disabled) {
+            el.disabled = true;
+        } });
+    }
     function closePopUp(item) {
-        const getEl = document.querySelectorAll(".show-popup");
-        if (!getEl[0])
+        if (!popUpScreen[0] || !item.children[0])
             return;
-        if (item.className === "pop-up") {
-            getEl[0].innerHTML = "";
+        if (item.children[0].classList.contains("pop-up")) {
+            popUpScreen[0].innerHTML = "";
+            enablAllBtns();
         }
         ;
-        if (getEl[0].innerHTML === "")
-            enablAllBtns();
     }
     function evnts(item, func) {
-        item?.forEach(el => el.addEventListener("click", (e) => func(e.target)));
+        item?.forEach(el => el.addEventListener("click", (e) => func(e.currentTarget)));
     }
-    ;
     function popUp() {
-        const getSection = document.querySelector(".show-popup");
-        if (!getSection)
+        if (!popUpScreen[0])
             return;
-        getSection.innerHTML = `
+        popUpScreen[0].innerHTML = `
   <div class="pop-up">
       <div class="popup-panel">
         <h2>Congratulations,</h2> 
