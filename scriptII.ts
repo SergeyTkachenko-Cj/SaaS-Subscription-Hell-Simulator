@@ -1,72 +1,180 @@
-type Pizza = {
-    id: number
-    name: string
-    price: number
-}
+// Pseudocode
 
-type Order = {
-    id: number
-    pizza: Pizza
-    status: "ordered" | "completed"
-}
+// ON PAGE LOAD:
+//     cart = []
+//     overall = 0
+//     render menu = [item1, item2, ...] 
+//     all add buttons enabled
+//     all delete buttons disabled
+//     MRR button disabled
 
-let cashInRegister = 100
-let nextOrderId = 1
-let nextPizzaId = 1
+// ON CLICK add menu item (item): 
+//     cart.push(item)
+//     if (item not in cart) return
+//     overall += item.price
+//     item add button disabled
+//     item delete button enabled
+//     if (overall > 0): MRR button enabled
 
-const menu: Pizza[] = [
-    { id: nextPizzaId++, name: "Margherita", price: 8 },
-    { id: nextPizzaId++, name: "Pepperoni", price: 10 },
-    { id: nextPizzaId++, name: "Hawaiian", price: 10 },
-    { id: nextPizzaId++, name: "Veggie", price: 9 },
-]
+// ON CLICK delete menu item (item): 
+//     cart.removeById(item.id)
+//     overall -= item.price
+//     item add button enabled
+//     item delete button disabled
+//     if (overall === 0): MRR button disabled
 
-const orderQueue: Order[] = []
+// ON CLICK MRR button (if overall > 0):
+//     show pop up with overall
+//     disable all buttons until dismiss)
+//     play animation once
+//     on dismiss OR after animationend cleanup once (ignore second trigger):
+//         hide pop up with overall
+//         animation remove
 
-function addNewPizza(pizzaObj: Pizza): Pizza {
-    menu.push(pizzaObj)
-    return pizzaObj
-}
+// -----------------------------------------------------------------
 
-function placeOrder(pizza: Pizza): Order | undefined {
-    const newOrder: Order = { id: nextOrderId++, pizza: pizza, status: "ordered" }
-    orderQueue.push(newOrder)
-    cashInRegister += pizza.price
-    return newOrder
-}
+(() => {
 
-function addToArray<Type>(array: Type[], item: Type): Type[] { 
-    array.push(item)
-    return array
-}
-
-// example usage:
-addToArray(menu, {id: nextPizzaId++, name: "Chicken Bacon Ranch", price: 12 })
-addToArray(orderQueue, { id: nextOrderId++, pizza: menu[2], status: "completed" })
-
-
-
-
-function completeOrder(orderId: number): Order | undefined {
-    const order = orderQueue.find(order => order.id === orderId)
-    if (!order) {
-        console.error(`${orderId} was not found in the orderQueue`)
-        return
+    type menuItem = {id: number, name: string, sub: string, image: string, badge: string, badgeClass: string, price: number}
+    
+    const menu: menuItem[] = [
+        {id: 0, name: "NOTION PRO MAX ULTRA", sub: "Organize your chaos in 12,748 different ways. Will you actually use it? LOL.", image: "./img/notion_logo.png", badge: "FOUNDER<br>FAVORITE!", badgeClass: "badge-green", price: 5.5},
+        {id: 1, name: "CURSOR PRO", sub: "AI pair programmer that writes beautiful bugs. 10x your vibe, 0x your revenue.", image: "./img/cursor_logo.png", badge: "HOT!", badgeClass: "badge-red", price: 18},
+        {id: 2, name: "CLAUDE MAX", sub: "It's all the hype recently, sooo...", image: "./img/claude_logo.png", badge: "BEST<br>PRICE", badgeClass: "badge-purple", price: 10},
+        {id: 3, name: "RANDOM AI SEO TOOL", sub: "Bacause why not, you know", image: "./img/seo_logo.png", badge: "BUY<br>NOW!", badgeClass: "badge-blue", price: 2.8},
+        {id: 4, name: "FIGMA", sub: "Where buttons become political debates.", image: "./img/figma_logo.png", badge: "ALMOST<br>FREE", badgeClass: "badge-green", price: 15},
+        {id: 5, name: "SOME RUBBISH FROM PRODUCT HUNT", sub: "Got to have it cause the founder is your X mate", image: "./img/product_hunt_logo.png", badge: "WOW!!!", badgeClass: "badge-red", price: 30},
+        {id: 6, name: "CHATGPT PLUS", sub: "Ask it questions. Get answers. Avoid real problems.", image: "./img/cursor_logo.png", badge: "DISCOUNT!", badgeClass: "badge-purple", price: 25},
+        {id: 7, name: "BEEHIIV", sub: "2,000 subscribers. 17 readers.", image: "./img/claude_logo.png", badge: "SHOCKING!", badgeClass: "badge-blue", price: 49},
+        {id: 8, name: "SUPABASE BACKEND SHIT", sub: "Backend in 5 minutes. Debugging in 5 days.", image: "./img/seo_logo.png", badge: "SUPA<br>PRICE", badgeClass: "badge-green", price: 25},
+        {id: 9, name: "ZOOM SOUL DRAIN PREMIUM", sub: "This meeting could’ve been an email.", image: "./img/figma_logo.png", badge: "ZOOM!<br>ZOOM!", badgeClass: "badge-red", price: 17}
+    ];
+    
+    let cart: menuItem[] = [];
+    let overall: number = 0;
+    const menuList = document.querySelector("#menuList");
+    
+    (function renderMenu(): void {
+      if (!menuList) return;
+      menuList.innerHTML = menu.map(item => `
+        <article class="tool-row">
+         <div class="tool-logo">
+            <img src="${item.image}" alt="${item.name}" /> 
+         </div>        
+         <div class="tool-copy">
+           <h3>${item.name}</h3>
+           <p>${item.sub}</p>
+         </div>       
+         <div class="badge ${item.badgeClass}">${item.badge}</div>     
+         <div class="price">
+            <span>$${item.price.toFixed(2)}</span>
+            <small>/mo</small>
+         </div>     
+         <div class="actions" data-id="${item.id}">
+            <button class="buy-btn" data-action="add">BUY NOW! 🛒</button>
+            <button class="delete-btn mute-btn" data-action="delete" disabled>DELETE</button>
+         </div>
+        </article>
+      `).join("");
+    })();
+    
+    const addBtn = document.querySelectorAll(".buy-btn");
+    const delBtn = document.querySelectorAll(".delete-btn");
+    
+    function addCart(item: HTMLButtonElement): void {
+      const gotcha = getElId(item);
+      if (!gotcha || !duplicatesCheck(gotcha, item)) return
+      cart.push(gotcha);
+      overall = Math.round((overall + gotcha.price) * 100) / 100;
+      if (!item.parentElement) return
+      addDelCartUpdates(item.parentElement);
     }
-    order.status = "completed"
-    return order
-}
-
-function getPizzaDetail(identifier: string | number): Pizza | undefined {
-    if (typeof identifier === "string") {
-        return menu.find(pizza => pizza.name.toLowerCase() === identifier.toLowerCase())
-    } else if (typeof identifier === "number") {
-        return menu.find(pizza => pizza.id === identifier)
-    } else {
-        throw new TypeError("Parameter `identifier` must be either a string or a number")
+    
+    function delCart(item: HTMLButtonElement): void {
+      const gotcha = getElId(item);
+      if (!gotcha || !duplicatesCheck(gotcha, item)) return
+      cart.splice(cart.findIndex(e => e === gotcha), 1);
+      overall = Math.round((overall - gotcha.price) * 100) / 100;
+      if (!item.parentElement) return
+      addDelCartUpdates(item.parentElement);
     }
-}
-
-// addNewPizza({ id: nextPizzaId++, name: "Chicken Bacon Ranch", price: 12 })
-// addNewPizza({ id: nextPizzaId++, name: "BBQ Chicken", price: 12 })
-// addNewPizza({ id: nextPizzaId++, name: "Spicy Sausage", price: 11 })
+    
+    function duplicatesCheck(el: menuItem, btn: HTMLButtonElement): boolean {
+      let count: number = 0;
+      const addOrDel = btn.getAttribute("data-action");
+      if (!addOrDel) return false
+      let condition: number = addOrDel === "add" ? 0 : 2;
+      for (let i = 0; i < cart.length; i++) {
+        if (el.id === cart[i]?.id) { count++ }
+      }
+      return !(count > condition)
+    }
+    
+    function addDelCartUpdates(item: HTMLElement): void {
+      findAllBtnPairs(item);
+      showSum(overall);
+      showCart();
+    }
+    
+    function getElId(item: HTMLButtonElement): menuItem | undefined {
+      const elem: number = Number(item.parentElement?.getAttribute("data-id"));
+      return menu.find(e => e.id === elem)
+    }
+    
+    function findAllBtnPairs(item: HTMLElement): void {     
+      const allBtns = item.querySelectorAll("button");
+      allBtns.forEach(btn => btnPairsOnOff(btn));
+    }
+    
+    function btnPairsOnOff(btn: HTMLButtonElement): void {    // toggle buttun pairs mutability
+      if (!btn.disabled) {
+        btn.disabled = true;
+        btn.classList.add("mute-btn");
+      } 
+      else { 
+        btn.disabled = false;
+        btn.classList.remove("mute-btn");
+      }
+    }
+    
+    function showSum(sum: number): void {
+      const expenses = document.querySelector(".total");
+      if (!expenses) return
+      expenses.textContent = `- $${sum.toFixed(2)}`;
+    }
+    
+    function showCart(): void {
+      const cartList = document.querySelector("#cartItems");
+      if (!cartList) return
+      const cartMap: string = cart.map(i => `
+        <article class="cart-item" data-id="${i.id}">
+          <div class="cart-logo">
+           <img src="${i.image}" alt="${i.name}" />
+          </div>
+          <p>${i.name}</p>
+          <strong>$${i.price.toFixed(2)}</strong>
+          <button class="remove-btn cart-cross" id="item-${i.id}">×</button>
+        </article> 
+        `).join("<br/>");
+      cartMap ? cartList.innerHTML = cartMap : cartList.innerHTML = `<p class="empty-cart">No tools yet. Suspiciously healthy.</p>`;
+      evnts(cartList.querySelectorAll(".cart-cross"), xBtnCart);
+    }
+    
+    function xBtnCart(item: HTMLButtonElement): void {
+      if (!item.parentElement) return
+      const getDelCartBtn = menuList?.querySelector(`[data-id="${item.parentElement.getAttribute('data-id')}"]`);
+      const delBtn = getDelCartBtn?.querySelector(".delete-btn");
+      if (!(delBtn instanceof HTMLButtonElement)) return
+      delCart(delBtn);
+      item.parentElement.remove();
+    }
+    
+    function evnts(item: NodeListOf<Element>, func: Function): void {
+      item?.forEach(el => el.addEventListener("click", (e) => func(e.currentTarget)))
+    }
+    
+    evnts(addBtn, addCart);
+    evnts(delBtn, delCart);
+    })();
+    
+    
