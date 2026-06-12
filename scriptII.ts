@@ -139,7 +139,7 @@
         </article> 
         `).join("");
       cartMap ? cartList.innerHTML = cartMap : cartList.innerHTML = `<p class="empty-cart">No tools yet. Suspiciously healthy.</p>`;
-      evnts(cartList.querySelectorAll(".cart-cross"), xBtnCart);
+      evnts(cartList.querySelectorAll<HTMLButtonElement>(".cart-cross"), xBtnCart);
     }
     
     function xBtnCart(item: HTMLButtonElement): void {
@@ -151,7 +151,7 @@
     }
 
     function evnts<T extends Element>(item: NodeListOf<T>, func: (el: T) => void): void {
-      item?.forEach(el => el.addEventListener("click", (e) => func(el)))
+      item.forEach(el => el.addEventListener("click", () => func(el)))
     }
     
     showSum(overall);

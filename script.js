@@ -23,10 +23,6 @@
 // ON CLICK MRR button (if overall > 0):
 //     show pop up with overall
 //     disable all buttons until dismiss)
-//     play animation once
-//     on dismiss OR after animationend cleanup once (ignore second trigger):
-//         hide pop up with overall
-//         animation remove
 // -----------------------------------------------------------------
 (() => {
     const menu = [
@@ -69,7 +65,7 @@
     const delBtn = document.querySelectorAll(".delete-btn");
     function addCart(item) {
         const gotcha = getElId(item);
-        if (!gotcha || !duplicatesCheck(gotcha, item))
+        if (!gotcha || duplicatesCheck(gotcha))
             return;
         cart.push(gotcha);
         overall = Math.round((overall + gotcha.price) * 100) / 100;
@@ -79,7 +75,7 @@
     }
     function delCart(item) {
         const gotcha = getElId(item);
-        if (!gotcha || !duplicatesCheck(gotcha, item))
+        if (!gotcha || duplicatesCheck(gotcha) >= 2)
             return;
         cart.splice(cart.findIndex(e => e === gotcha), 1);
         overall = Math.round((overall - gotcha.price) * 100) / 100;
@@ -87,18 +83,10 @@
             return;
         addDelCartUpdates(item.parentElement);
     }
-    function duplicatesCheck(el, btn) {
+    function duplicatesCheck(el) {
         let count = 0;
-        const addOrDel = btn.getAttribute("data-action");
-        if (!addOrDel)
-            return false;
-        let condition = addOrDel === "add" ? 0 : 1;
-        for (let i = 0; i < cart.length; i++) {
-            if (el.id === cart[i]?.id) {
-                count++;
-            }
-        }
-        return !(count > condition);
+        cart.forEach(i => i.name === el.name ? count++ : "");
+        return count;
     }
     function addDelCartUpdates(item) {
         findAllBtnPairs(item);

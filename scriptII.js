@@ -139,7 +139,7 @@
         delCart(delBtn);
     }
     function evnts(item, func) {
-        item?.forEach(el => el.addEventListener("click", (e) => func(el)));
+        item.forEach(el => el.addEventListener("click", () => func(el)));
     }
     showSum(overall);
     evnts(addBtn, addCart);

@@ -26,10 +26,6 @@
 // ON CLICK MRR button (if overall > 0):
 //     show pop up with overall
 //     disable all buttons until dismiss)
-//     play animation once
-//     on dismiss OR after animationend cleanup once (ignore second trigger):
-//         hide pop up with overall
-//         animation remove
 
 // -----------------------------------------------------------------
 
@@ -81,7 +77,7 @@ const delBtn = document.querySelectorAll(".delete-btn");
 
 function addCart(item: HTMLButtonElement): void {
   const gotcha = getElId(item);
-  if (!gotcha || !duplicatesCheck(gotcha, item)) return
+  if (!gotcha || duplicatesCheck(gotcha)) return
   cart.push(gotcha);
   overall = Math.round((overall + gotcha.price) * 100) / 100;
   if (!item.parentElement) return
@@ -90,22 +86,17 @@ function addCart(item: HTMLButtonElement): void {
 
 function delCart(item: HTMLButtonElement): void {
   const gotcha = getElId(item);
-  if (!gotcha || !duplicatesCheck(gotcha, item)) return
+  if (!gotcha || duplicatesCheck(gotcha) >= 2) return
   cart.splice(cart.findIndex(e => e === gotcha), 1);
   overall = Math.round((overall - gotcha.price) * 100) / 100;
   if (!item.parentElement) return
   addDelCartUpdates(item.parentElement);
 }
 
-function duplicatesCheck(el: menuItem, btn: HTMLButtonElement): boolean {
-  let count: number = 0;
-  const addOrDel = btn.getAttribute("data-action");
-  if (!addOrDel) return false
-  let condition: number = addOrDel === "add" ? 0 : 1;
-  for (let i = 0; i < cart.length; i++) {
-    if (el.id === cart[i]?.id) { count++ }
-  }
-  return !(count > condition)
+function duplicatesCheck(el: menuItem): number {
+  let count = 0;
+  cart.forEach( i => i.name === el.name ? count++ : "");
+  return count
 }
 
 function addDelCartUpdates(item: HTMLElement): void {
@@ -125,7 +116,7 @@ function findAllBtnPairs(item: HTMLElement): void {
   allBtns.forEach(btn => btnPairsOnOff(btn));
 }
 
-function btnPairsOnOff(btn: HTMLButtonElement): void {    // toggle buttun pairs mutability
+function btnPairsOnOff(btn: HTMLButtonElement): void {   
   if (!btn.disabled) {
     btn.disabled = true;
     btn.classList.add("mute-btn");
