@@ -3,24 +3,60 @@
 }
 
 body {
+  position: relative;
   margin: 0;
   min-height: 100vh;
   padding: 32px;
-  background: #073bd8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: Arial, Helvetica, sans-serif;
-  /* background-image: url("./img/sky-background.svg"); */
-  background-size: cover;     
+
+  /* sky gradient (bottom layer) */
+  background-color: #041a5c;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed; 
+  background-attachment: fixed;
+}
+
+/* star layer 1 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("./img/stars-tile.svg");
+  background-repeat: repeat;
+  background-size: 480px 480px;
+  background-position: 0 0;
+  opacity: 0.75;
+}
+
+/* star layer 2 — different size + offset breaks the grid */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("./img/stars-tile.svg");
+  background-repeat: repeat;
+  background-size: 620px 620px;
+  background-position: 143px 97px;
+  opacity: 0.45;
 }
 
 .app {
+    position: relative;
+    z-index: 1; 
     display: grid;
     grid-template-rows:    8rem 1fr 3rem;
     grid-template-columns: repeat(5, 1fr);
     grid-column-gap: 1.5rem;
     grid-row-gap: 1.5rem;
+    max-width: 1500px;
 }
 
 .grid-div {
@@ -64,6 +100,56 @@ body {
 .two {
   grid-column: span 2 / span 2;
   grid-column-start: 3;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+/* tilted promo ribbon banner */
+.poor-banner {
+  position: absolute;
+  top: 0; left: 3rem;
+  --banner-red: #e82626;
+  --banner-yellow: #ffe800;
+  --banner-border: #0a0a0a;
+  width: 15rem;
+  transform: rotate(-5.5deg);
+  filter: drop-shadow(5px 7px 10px rgba(0, 0, 0, 0.45));
+  font-family: "Anton", Impact, "Arial Black", sans-serif;
+}
+
+.poor-banner__top,
+.poor-banner__bottom {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+}
+
+.poor-banner__top {
+  padding: 0.45rem 1.25rem 0.35rem;
+  border: 2px solid var(--banner-border);
+  border-bottom: none;
+  background: var(--banner-red);
+  color: #fff;
+  font-size: 1.5rem;
+  text-align: center;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25),
+    1px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.poor-banner__bottom {
+  position: relative;
+  margin-left: -2.1rem;
+  padding: 0.3rem 1.1rem 0.35rem 2.4rem;
+  border: 2px solid var(--banner-border);
+  background: var(--banner-yellow);
+  color: #000;
+  font-size: 1rem;
+  text-align: center;
+  clip-path: polygon(1.35rem 0, 100% 0, 100% 100%, 1.35rem 100%, 0 50%);
 }
 
 .three {
@@ -75,13 +161,10 @@ body {
   max-width: 1100px;
   margin: 0 auto;
   overflow: hidden;
-  /* border: 3px solid #004bff; */
+  /* border: 2px solid #44eaff; */
   border-radius: 8px;
   background: #fff7c8;
-  /* box-shadow: */
-    0 0 0 3px #21b8ff,
-    0 12px 0 #0030a8,
-    0 24px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 0 2px #875cff, 0 0 18px rgba(0, 255, 255, 0.65), inset 0 0 32px rgba(255, 255, 255, 0.08), 0 10px 22px rgba(0, 0, 0, 0.5);
 }
 
 .promo-bar {
@@ -329,11 +412,9 @@ button {
     overflow: hidden;
     border-radius: 12px;
     /* border: 3px solid #6d52ff; */
+    border: 2px solid #44eaff;
     background: #fff8c9;
-    /* box-shadow:
-      0 0 0 2px #d8f0ff,
-      0 0 18px rgba(0, 255, 255, 0.55),
-      0 8px 20px rgba(0, 0, 0, 0.45); */
+    box-shadow: 0 0 0 2px #875cff, 0 0 18px rgba(0, 255, 255, 0.65), inset 0 0 32px rgba(255, 255, 255, 0.08), 0 10px 22px rgba(0, 0, 0, 0.5);
   }
   
   .cart-header {
