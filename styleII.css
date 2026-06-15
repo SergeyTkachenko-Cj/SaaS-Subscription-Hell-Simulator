@@ -4,7 +4,6 @@
 
 body {
   position: relative;
-  margin: 0;
   min-height: 100vh;
   padding: 32px;
   display: flex;
@@ -83,7 +82,7 @@ body::after {
 
 .dude-img {
   position: absolute;
-  top: -21%; left: 0;
+  top: -21%; right: 0;
   width: 26rem;
   height: 11rem;
   background-image: url("./img/dude.png");
@@ -109,7 +108,7 @@ body::after {
 /* tilted promo ribbon banner */
 .poor-banner {
   position: absolute;
-  top: 0; left: 3rem;
+  top: 0; right: 8rem;
   --banner-red: #e82626;
   --banner-yellow: #ffe800;
   --banner-border: #0a0a0a;
@@ -400,10 +399,10 @@ button {
 }
 
 .regret-sidebar {
-    grid-column-start: 5;
-    width: 420px;
     display: grid;
+    grid-column-start: 5;
     gap: 18px;
+    width: 420px;
 }
 
 /* CART PANEL */
@@ -684,6 +683,43 @@ button {
     grid-column: span 5 / span 5;
     grid-row-start: 3;
   }
+
+@media (max-width: 1350px) {
+  .promo-bar, .cart-header, .learn-more {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 1230px) {
+  .app {
+    max-width: none;
+    width: 100%;
+  }
+
+  .saas-panel {
+    grid-column: span 6 / span 6;
+    grid-row-start: 2;
+  }
+
+  .regret-sidebar {
+    grid-column: span 6 / span 6;
+    width: 100%;
+  }
+
+  .cart-panel {
+    width: 50%;
+    overflow: unset;
+  }
+
+  .cart-body {
+    height: 9rem;
+  }
+
+  .damage-panel {
+    width: 50%;
+  }
+}
+
 
 @media (max-width: 900px) {
   .tool-row {
