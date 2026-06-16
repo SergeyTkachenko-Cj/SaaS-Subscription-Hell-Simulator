@@ -694,20 +694,27 @@ button {
   .app {
     max-width: none;
     width: 100%;
+    grid-column-gap: 0;
   }
 
   .saas-panel {
     grid-column: span 6 / span 6;
     grid-row-start: 2;
+    max-width: none;
   }
 
   .regret-sidebar {
-    grid-column: span 6 / span 6;
+    grid-column-start: 1;
+    grid-column-end: 6;
+    grid-template-columns: repeat(6, 1fr);
     width: 100%;
   }
 
   .cart-panel {
-    width: 50%;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 4;
     overflow: unset;
   }
 
@@ -716,7 +723,10 @@ button {
   }
 
   .damage-panel {
-    width: 50%;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 4;
+    grid-column-end: 7;
   }
 }
 
