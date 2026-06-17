@@ -157,10 +157,10 @@ body::after {
 
 .saas-panel {
   grid-column: span 4 / span 4;
+  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   overflow: hidden;
-  /* border: 2px solid #44eaff; */
   border-radius: 8px;
   background: #fff7c8;
   box-shadow: 0 0 0 2px #875cff, 0 0 18px rgba(0, 255, 255, 0.65), inset 0 0 32px rgba(255, 255, 255, 0.08), 0 10px 22px rgba(0, 0, 0, 0.5);
@@ -730,13 +730,16 @@ button {
   }
 }
 
-
-@media (max-width: 900px) {
-  .tool-row {
-    grid-template-columns: 76px 1fr 120px;
+@media (max-width: 900px) { 
+  .dude-block, .badge {
+    display: none;
   }
 
-  .badge,
+  .tool-row {
+    grid-template-columns: 76px 1.5fr 1fr 180px;
+  }
+
+  /* .badge,
   .price,
   .actions {
     grid-column: span 1;
@@ -744,6 +747,16 @@ button {
 
   .actions {
     grid-column: 2 / -1;
+  } */
+}
+
+@media (max-width: 750px) {
+  .tool-row {
+    grid-template-columns: .5fr 1fr 180px;
+  }
+  
+  .tool-copy {
+    display: none;
   }
 }
 
