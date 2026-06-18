@@ -412,7 +412,9 @@ button {
     border-radius: 12px;
     /* border: 3px solid #6d52ff; */
     border: 2px solid #44eaff;
-    background: #fff8c9;
+    background:
+      radial-gradient(circle at center, rgba(255, 255, 255, 0.75), transparent 58%),
+      linear-gradient(90deg, #fff5bd, #fffde6, #fff5bd);
     box-shadow: 0 0 0 2px #875cff, 0 0 18px rgba(0, 255, 255, 0.65), inset 0 0 32px rgba(255, 255, 255, 0.08), 0 10px 22px rgba(0, 0, 0, 0.5);
   }
   
@@ -456,9 +458,6 @@ button {
   .cart-body {
     height: 27rem;
     padding: 14px 20px 5px;
-    background:
-      radial-gradient(circle at center, rgba(255, 255, 255, 0.75), transparent 58%),
-      linear-gradient(90deg, #fff5bd, #fffde6, #fff5bd);
     overflow: scroll;
   }
   
@@ -619,6 +618,7 @@ button {
     line-height: 0.95;
     font-weight: 1000;
     letter-spacing: -6px;
+    white-space: nowrap;
     text-align: center;
     text-shadow:
       4px 4px 0 #720000,
@@ -728,6 +728,18 @@ button {
     grid-column-start: 4;
     grid-column-end: 7;
   }
+
+  .damage-panel h3, .roi-line {
+    font-size: 2.5vw;
+  }
+
+  .damage-number .total {
+    font-size: 8vw;
+  }
+
+  .damage-number span {
+    font-size: 3.5vw;
+  }
 }
 
 @media (max-width: 900px) { 
@@ -738,19 +750,13 @@ button {
   .tool-row {
     grid-template-columns: 76px 1.5fr 1fr 180px;
   }
-
-  /* .badge,
-  .price,
-  .actions {
-    grid-column: span 1;
-  }
-
-  .actions {
-    grid-column: 2 / -1;
-  } */
 }
 
 @media (max-width: 750px) {
+  .promo-bar .em, .promo-bar .off {
+    display: none;
+  }
+
   .tool-row {
     grid-template-columns: .5fr 1fr 180px;
   }
@@ -758,11 +764,25 @@ button {
   .tool-copy {
     display: none;
   }
+
+  .cart-item {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .cart-item p {
+    display: none;
+  }
 }
 
 @media (max-width: 560px) {
   body {
     padding: 12px;
+  }
+
+  .logo-img {
+    left: -3rem;
+    width: 25rem;
+    height: 100%;
   }
 
   .promo-bar {
@@ -773,8 +793,8 @@ button {
   }
 
   .tool-row {
-    grid-template-columns: 64px 1fr;
-    gap: 12px;
+    grid-template-columns: 64px 1fr 1fr;
+    gap: 25px;
     padding: 14px;
   }
 
@@ -784,11 +804,16 @@ button {
     font-size: 34px;
   }
 
+  .tool-copy {
+    display: block;
+  }
+
   .tool-copy h3 {
     font-size: 21px;
   }
 
   .tool-copy p {
+    display: none;
     font-size: 14px;
   }
 
@@ -808,6 +833,41 @@ button {
 
   .learn-more {
     font-size: 20px;
+  }
+
+  .cart-item {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+  .cart-item p {
+    display: block;
+  }
+
+  .cart-panel {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 7;
+    overflow: unset;
+  }
+
+  .damage-panel {
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 1;
+    grid-column-end: 7;
+  }
+
+  .damage-panel h3, .roi-line {
+    font-size: 4vw;
+  }
+
+  .damage-number .total {
+    font-size: 18vw;
+  }
+
+  .damage-number span {
+    font-size: 9vw;
   }
 }
 
