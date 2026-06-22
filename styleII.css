@@ -684,9 +684,17 @@ button {
     grid-row-start: 3;
   }
 
-@media (max-width: 1350px) {
+@media (max-width: 1377px) {
   .promo-bar, .cart-header, .learn-more {
     font-size: 20px;
+  }
+
+  .tool-copy h3 {
+    margin-top: 1rem
+  }
+
+  .tool-copy p {
+    margin-bottom: 1rem
   }
 }
 
@@ -891,6 +899,16 @@ button {
     body {
       padding: 14px;
     }
+
+    .tool-row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .price {
+      grid-column-start: 1;
+      grid-column-end: 3;
+      justify-content: center;
+    }
   
     .regret-sidebar {
       width: 100%;
@@ -914,5 +932,27 @@ button {
   
     .mrr-button {
       font-size: 21px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .logo-img {
+      width: 100vw;
+    }
+
+    .promo-bar {
+      height: 2.5rem;
+    }
+
+    .promo-bar > * {
+      display: none;
+    }
+
+    .learn-more {
+      height: 2.5rem;
+    }
+
+    .learn-more span {
+      display: none;
     }
   }
