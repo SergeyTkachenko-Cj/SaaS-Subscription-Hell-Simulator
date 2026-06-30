@@ -97,9 +97,9 @@ body::after {
 }
 
 .two {
-  grid-column: span 2 / span 2;
+  /* grid-column: span 2 / span 2;
   grid-column-start: 3;
-  display: flex;
+  display: flex; */
   align-items: flex-start;
   justify-content: center;
   padding-top: 0.5rem;
@@ -766,7 +766,7 @@ button {
   }
 
   .damage-number .total {
-    font-size: 10vw;
+    font-size: 9vw;
   }
 }
 
