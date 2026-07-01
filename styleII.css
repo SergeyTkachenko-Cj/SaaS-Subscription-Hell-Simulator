@@ -58,13 +58,10 @@ body::after {
     max-width: 1500px;
 }
 
-.grid-div {
-    width: 100%;
-    /* background-color: #00d83a; */
-}
-
 .logo-block {
   position: relative;
+  grid-column: span 2 / span 2;
+  width: 100%;
 }
 
 .logo-img {
@@ -78,6 +75,8 @@ body::after {
 
 .dude-block {
   position: relative;
+  grid-column-start: 5;
+  width: 100%;
 }
 
 .dude-img {
@@ -96,16 +95,6 @@ body::after {
   grid-column: span 2 / span 2;
 }
 
-.two {
-  /* grid-column: span 2 / span 2;
-  grid-column-start: 3;
-  display: flex; */
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 0.5rem;
-}
-
-/* tilted promo ribbon banner */
 .poor-banner {
   position: absolute;
   top: 0; right: 8rem;
@@ -118,15 +107,15 @@ body::after {
   font-family: "Anton", Impact, "Arial Black", sans-serif;
 }
 
-.poor-banner__top,
-.poor-banner__bottom {
+.poor-banner-top,
+.poor-banner-bottom {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   line-height: 1.05;
 }
 
-.poor-banner__top {
+.poor-banner-top {
   padding: 0.45rem 1.25rem 0.35rem;
   border: 2px solid var(--banner-border);
   border-bottom: none;
@@ -139,7 +128,7 @@ body::after {
     1px 2px 0 rgba(0, 0, 0, 0.35);
 }
 
-.poor-banner__bottom {
+.poor-banner-bottom {
   position: relative;
   margin-left: -2.1rem;
   padding: 0.3rem 1.1rem 0.35rem 2.4rem;
@@ -149,10 +138,6 @@ body::after {
   font-size: 1rem;
   text-align: center;
   clip-path: polygon(1.35rem 0, 100% 0, 100% 100%, 1.35rem 100%, 0 50%);
-}
-
-.three {
-  grid-column-start: 5;
 }
 
 .saas-panel {
@@ -279,11 +264,7 @@ body::after {
   font-weight: 1000;
   text-align: center;
   text-transform: uppercase;
-  /* text-shadow:
-    2px 2px 0 rgba(0,0,0,.35),
-    -1px -1px 0 rgba(255,255,255,.25); */
   transform: rotate(-5deg);
-  /* filter: drop-shadow(3px 5px 3px rgba(0,0,0,.35)); */
 }
 
 .badge-green {
@@ -317,7 +298,6 @@ body::after {
   gap: 6px;
   color: #e91b38;
   font-weight: 1000;
-  /* text-shadow: 2px 2px 0 #ffd2d6; */
 }
 
 .price span {
@@ -428,10 +408,6 @@ button {
     gap: 18px;
     padding: 0 28px;
     background: linear-gradient(#7b2eff 0%, #5520ca 48%, #3e109d 100%);
-    /* border-bottom: 3px solid #30107d; */
-    /* box-shadow:
-      inset 0 3px 0 rgba(255, 255, 255, 0.35),
-      inset 0 -4px 0 rgba(0, 0, 0, 0.18); */
   }
   
   .cart-icon {
